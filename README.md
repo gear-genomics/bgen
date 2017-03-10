@@ -1,2 +1,1 @@
-# bgen
-Barcode Generator
+Heuristic Barcode Generator
