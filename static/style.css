@@ -1,0 +1,4 @@
+.control input,
+.control select {
+  width: 150px;
+}
