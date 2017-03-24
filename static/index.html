@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>bgen &ndash; barcode generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
+  <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Heuristic Barcode Generator
+        </h1>
+        <h2 class="subtitle">
+          Analysis takes about ~25 seconds, please be patient.
+        </h2>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <label class="label">Length of barcodes</label>
+      <p class="control">
+        <span class="select">
+          <select id="bc-length">
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+            <option>11</option>
+            <option>12</option>
+            <option>13</option>
+            <option>14</option>
+            <option>15</option>
+            <option>16</option>
+          </select>
+        </span>
+      </p>
+      <label class="label">Amount of barcodes</label>
+      <p class="control">
+        <input id="bc-count" class="input" type="number" value="6">
+      </p>
+      <p class="control">
+        <button id="submit-button" class="button is-primary">Submit</button>
+      </p>
+    </div>
+  </section>
+  <section class="section section--results">
+    <div class="container">
+      <h2>Results</h2>
+      <hr>
+      <div id="results"></div>
+    </div>
+  </section>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+  <script src="static/script.js"></script>
+</body>
+
+</html>

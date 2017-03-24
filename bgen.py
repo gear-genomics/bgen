@@ -2,8 +2,6 @@
 
 from __future__ import print_function
 import os
-from flask import Flask, render_template, request
-import argparse
 import collections
 import numpy
 import math
@@ -12,7 +10,6 @@ import csv
 import datetime
 import random
 
-app = Flask(__name__)
 
 def entropy(barcode):
     freqC = collections.Counter()
@@ -26,9 +23,11 @@ def entropy(barcode):
         etr += freq * math.log(freq, 2)
     return -etr
 
+
 def hamming_distance(s1, s2):
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
+
 
 def basedist(bs):
     error = 0
@@ -42,7 +41,7 @@ def basedist(bs):
 
 
 # Read optional barcode file
-def bgen(barlength, barcount, barfile = None):
+def bgen(barlength, barcount, barfile=None):
     prel = 0
     barset = list()
     if barfile is not None:
@@ -67,7 +66,7 @@ def bgen(barlength, barcount, barfile = None):
             barsetnew = list()
             if len(barset):
                 for b in barset:
-                    if (len(b) < 8) or ((float(max(b.count('A'), b.count('C'), b.count('G'), b.count('T')))/float(len(b))<0.5) and (random.random() > float(barlength) / 22.0)):
+                    if (len(b) < 8) or ((float(max(b.count('A'), b.count('C'), b.count('G'), b.count('T')))/float(len(b)) < 0.5) and (random.random() > float(barlength) / 22.0)):
                         for s in alphabet:
                             barsetnew.append(b+s)
                 barset = barsetnew
@@ -85,8 +84,8 @@ def bgen(barlength, barcount, barfile = None):
             ent.append(entropy(b))
         cutoff = sorted(ent, reverse=True)[50000]
         barsetnew = list()
-        for i,b in enumerate(barset):
-            if ent[i]>cutoff:
+        for i, b in enumerate(barset):
+            if ent[i] > cutoff:
                 barsetnew.append(b)
         barset = numpy.array(barsetnew)
     print("#Entropy filtered barcodes", len(barset))
@@ -94,7 +93,7 @@ def bgen(barlength, barcount, barfile = None):
     # Check number of barcodes
     if barcount >= len(barset):
         barcount = len(barset) - 1
-        
+
     # Find good barcode combinations
     bestbarset = []
     bestham = 0
@@ -119,38 +118,3 @@ def bgen(barlength, barcount, barfile = None):
         else:
             itercount += 1
     return({'barset': bestbarset, 'minham': bestham, 'sqerr': bestbasedist})
-
-@app.route('/bgen', methods = ['GET', 'POST'])
-def bgen_request():
-    if request.method == 'POST':
-        blen = request.form['blen']
-        if blen == '':
-            error = "Barcode length missing!"
-            return render_template('bgen.html', error = error)
-        try:
-            blen = int(blen)
-        except ValueError:
-            error = "Barcode length is not an integer!"
-            return render_template('bgen.html', error = error)
-        bcount = request.form['bcount']
-        if bcount == '':
-            error = "Barcode count missing!"
-            return render_template('bgen.html', error = error)
-        try:
-            bcount = int(bcount)
-        except ValueError:
-            error = "Barcode count is not an integer!"
-            return render_template('bgen.html', error = error)
-        if (bcount < 2) or (bcount >= 1000):
-            error = "Barcode count has to be greater than 1 and smaller than 1000!"
-            return render_template('bgen.html', error = error)
-        bs = bgen(blen, bcount, barfile = None)
-        return "<br>Barcode Length: " + str(blen) + "<br>#Barcodes: " + str(len(bs['barset'])) + "<br>Barcodes: " + ",".join(bs['barset']) + "<br>Min. Pairwise Hamming Distance: " + str(bs['minham']) + "<br>SquaredError: " + str(bs['sqerr'])
-    return render_template('bgen.html')
-
-@app.route("/")
-def submit():
-    return render_template('bgen.html')
-
-if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 3300, debug = True, threaded=True)

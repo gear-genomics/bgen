@@ -1,0 +1,12 @@
+.control input,
+.control select {
+  width: 150px;
+}
+
+.section--results {
+  padding-top: 10px;
+}
+
+#chart {
+  margin-top: 20px;
+}
