@@ -41,7 +41,7 @@ def basedist(bs):
 
 
 # Read optional barcode file
-def bgen(barlength, barcount, barfile=None):
+def bgen(barlength, barcount, logfile=None, barfile=None):
     prel = 0
     barset = list()
     if barfile is not None:
@@ -51,14 +51,16 @@ def bgen(barlength, barcount, barfile=None):
                 if prel:
                     l = len(row[0])
                     if l != prel:
-                        print("Barcodes differ in length")
+                        if logfile is not None:
+                            print("Barcodes differ in length", file=logfile)
                         quit()
                 else:
                     prel = len(row[0])
                 barset.append(row[0])
         barlength = prel
         if barcount > len(barset):
-            print("Not enough barcodes")
+            if logfile is not None:
+                print("Not enough barcodes", file=logfile)
             quit()
     else:
         alphabet = ['A', 'C', 'G', 'T']
@@ -73,7 +75,8 @@ def bgen(barlength, barcount, barfile=None):
             else:
                 for s in alphabet:
                     barset.append(s)
-    print("#Candidate Barcodes", len(barset))
+    if logfile is not None:
+        print("#Candidate Barcodes", len(barset), file=logfile)
 
     # Pre-filter by entropy
     if (len(barset) <= 50000):
@@ -88,7 +91,8 @@ def bgen(barlength, barcount, barfile=None):
             if ent[i] > cutoff:
                 barsetnew.append(b)
         barset = numpy.array(barsetnew)
-    print("#Entropy filtered barcodes", len(barset))
+    if logfile is not None:
+        print("#Entropy filtered barcodes", len(barset), file=logfile)
 
     # Check number of barcodes
     if barcount >= len(barset):
@@ -113,7 +117,8 @@ def bgen(barlength, barcount, barfile=None):
             bestham = minham
             bestbarset = barset[indset]
             bestbasedist = basedist(barset[indset])
-            print(','.join(bestbarset), bestham, bestbasedist, itercount)
+            if logfile is not None:
+                print(','.join(bestbarset), bestham, bestbasedist, itercount, file=logfile)
             itercount = 0
         else:
             itercount += 1
