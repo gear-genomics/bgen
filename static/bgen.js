@@ -1,30 +1,28 @@
+/* global Mustache, XMLHttpRequest, c3 */
+
 var submitButton = document.getElementById('submit-button')
 submitButton.addEventListener('click', submit)
 var spinnerHtml = '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>'
+var resultsTemplate = document.getElementById('tmpl-results').innerHTML
+Mustache.parse(resultsTemplate)
 
-function submit() {
+function submit () {
   var bcLength = document.getElementById('bc-length').value
   var bcCount = document.getElementById('bc-count').value
   var req = new XMLHttpRequest()
   req.addEventListener('load', displayResults)
-  req.open('GET', '/' + bcLength + '/' + bcCount)
+  req.open('GET', '/bgen/' + bcLength + '/' + bcCount)
   req.send()
   document.getElementById('results').innerHTML = spinnerHtml
 }
 
-function displayResults() {
+function displayResults () {
   var results = JSON.parse(this.responseText)
+  results.squaredError = results.squaredError.toFixed(4)
   var frequencies = getFrequencies(results.barcodes)
-  console.log(results)
-  var resultHtml =
-    '<div>min. Hamming distance: ' + results.pairwiseHammingDistance + '</div>' +
-    '<div>squared error: ' + results.squaredError.toFixed(4) + '</div>' +
-    '<div>barcodes:<pre>' +
-    results.barcodes.join('\n') +
-    '</pre></div>' +
-    '<div id="chart"></div>'
-  document.getElementById('results').innerHTML = resultHtml
-  var chart = c3.generate({
+  var resultsRendered = Mustache.render(resultsTemplate, results)
+  document.getElementById('results').innerHTML = resultsRendered
+  c3.generate({
     bindto: '#chart',
     data: {
       columns: [
@@ -37,6 +35,9 @@ function displayResults() {
       groups: [
         ['A', 'C', 'G', 'T']
       ]
+    },
+    color: {
+      pattern: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3']
     },
     axis: {
       y: {
@@ -52,14 +53,14 @@ function displayResults() {
           position: 'outer-right'
         },
         tick: {
-          format: function (x) { return x + 1; }
+          format: function (x) { return x + 1 }
         }
       }
     }
   })
 }
 
-function getFrequencies(sequences) {
+function getFrequencies (sequences) {
   var frequencies = {
     A: [],
     C: [],
@@ -75,7 +76,7 @@ function getFrequencies(sequences) {
       G: 0,
       T: 0
     }
-    for (let j = 0; j < num; j+= 1) {
+    for (let j = 0; j < num; j += 1) {
       var seq = sequences[j]
       counts[seq[i]] += 1
     }
@@ -84,6 +85,5 @@ function getFrequencies(sequences) {
     frequencies.G.push(counts.G / num)
     frequencies.T.push(counts.T / num)
   }
-  console.log(frequencies)
   return frequencies
 }

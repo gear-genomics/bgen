@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
-  <link rel="stylesheet" href="static/style.css">
+  <link rel="stylesheet" href="/bgen/static/bgen.css">
 </head>
 
 <body>
@@ -47,7 +47,7 @@
       </p>
       <label class="label">Amount of barcodes</label>
       <p class="control">
-        <input id="bc-count" class="input" type="number" value="6">
+        <input id="bc-count" class="input" type="number" min="1" max="1000" value="6">
       </p>
       <p class="control">
         <button id="submit-button" class="button is-primary">Submit</button>
@@ -61,9 +61,29 @@
       <div id="results"></div>
     </div>
   </section>
+
+  <script id="tmpl-results" type="x-tmpl-mustache">
+    <div>
+      min. Hamming distance: {{ pairwiseHammingDistance }}
+    </div>
+    <div>
+      squared error: {{ squaredError }}
+    </div>
+    <div>
+      barcodes:
+      <pre>
+        {{#barcodes}}
+        {{.}}
+        {{/barcodes}}
+      </pre>
+    </div>
+    <div id="chart"></div>
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
-  <script src="static/script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+  <script src="/bgen/static/bgen.js"></script>
 </body>
 
 </html>
