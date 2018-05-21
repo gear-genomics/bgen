@@ -1,8 +1,0 @@
-Flask==0.12
-Jinja2==2.9.5
-MarkupSafe==1.0
-Werkzeug==0.12
-click==6.7
-itsdangerous==0.24
-numpy==1.12.0
-wsgiref==0.1.2
