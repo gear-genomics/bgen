@@ -43,7 +43,7 @@ function displaySequences (sequences) {
 }
 
 function displayStats (result) {
-  let t = '<table class="table table-sm table-hover"><tbody>'
+  let t = '<table class="table table-striped"><tbody>'
   t += '<tr><td>Length of barcodes</td><td>' + result.barcodeLength + '</td></tr>'
   t += '<tr><td>Amount of barcodes</td><td>' + result.barcodeCount + '</td></tr>'
   t += '<tr><td>Min. Hamming distance</td><td>' + result.pairwiseHammingDistance + '</td></tr>'

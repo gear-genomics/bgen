@@ -1,1 +1,6 @@
-Heuristic Barcode Generator
+# bgen: barcode generator
+
+> Heuristically generate a set of (short) DNA sequences with
+a balanced per-position base distribution
+
+
