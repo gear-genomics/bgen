@@ -1,0 +1,26 @@
+{
+  "name": "bgen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generate dissimilar barcode sequences with balanced, per-position base distribution",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && parcel build src/index.html --no-source-maps --public-url ./",
+    "dev": "parcel src/index.html --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gear-genomics/bgen.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/gear-genomics/bgen/issues"
+  },
+  "homepage": "https://github.com/gear-genomics/bgen#readme",
+  "devDependencies": {
+    "parcel": "^1.8.1",
+    "rimraf": "^2.6.2"
+  }
+}

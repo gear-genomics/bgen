@@ -1,25 +1,37 @@
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js')
 
 onmessage = function (event) {
-  const result = generate(event.data.length, event.data.amount)
+  const result = generate(
+    event.data.length,
+    event.data.amount,
+    event.data.candidates
+  )
   postMessage(result)
 }
 
-function generate (length, amount) {
+function generate (length, amount, candidatesProvided) {
   const alphabet = 'ACGT'
-  let candidates = alphabet.split('')
+  let candidates
+  let barcodeLength
 
-  for (let i = 1; i < length; i += 1) {
-    const newCandidates = []
-    for (let j = 0; j < candidates.length; j += 1) {
-      const seq = candidates[j]
-      if (seq.length < 8 || (isBalanced(seq) && Math.random() > length / 22)) {
-        for (let k = 0; k < alphabet.length; k += 1) {
-          newCandidates.push(seq + alphabet[k])
+  if (candidatesProvided.length > 0) {
+    candidates = candidatesProvided
+    barcodeLength = candidates[0].length
+  } else {
+    barcodeLength = length
+    candidates = alphabet.split('')
+    for (let i = 1; i < barcodeLength; i += 1) {
+      const newCandidates = []
+      for (let j = 0; j < candidates.length; j += 1) {
+        const seq = candidates[j]
+        if (seq.length < 8 || (isBalanced(seq) && Math.random() > barcodeLength / 22)) {
+          for (let k = 0; k < alphabet.length; k += 1) {
+            newCandidates.push(seq + alphabet[k])
+          }
         }
       }
+      candidates = newCandidates
     }
-    candidates = newCandidates
   }
 
   if (candidates.length > 50000) {
@@ -70,10 +82,11 @@ function generate (length, amount) {
   
   return {
     barcodeCount: amount,
-    barcodeLength: length,
+    barcodeLength,
     barcodes: barcodes,
     pairwiseHammingDistance: bestHamming, 
-    squaredError: bestBaseDist
+    squaredError: bestBaseDist,
+    candidates: candidatesProvided.length > 0 ? 'user-provided' : 'random'
   }
 }
 

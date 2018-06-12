@@ -1,16 +1,25 @@
+$('#mainTab a').on('click', function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+
 const submitButton = document.querySelector('#btn-submit')
 const exampleButton = document.querySelector('#btn-example')
 const inputLength = document.querySelector('#barcodeLength')
 const inputAmount = document.querySelector('#barcodeAmount')
+const inputCandidates = document.querySelector('#candidates')
 const resultsContainer = document.querySelector('#results-container')
 const resultSequences = document.querySelector('#barcode-sequences')
 const sequenceStats = document.querySelector('#sequence-stats')
 const notification = document.querySelector('#bgen-notification')
+const error = document.querySelector('#bgen-error')
+const errorMessage = document.querySelector('#error-message')
+const resultLink = document.querySelector('#link-results')
  
 submitButton.addEventListener('click', run)
 exampleButton.addEventListener('click', showExample)
 
-const worker = new Worker('static/js/generateBarcodes.js')
+const worker = new Worker('./generateBarcodes.js')
 worker.onmessage = function (event) {
   const result = event.data
   hideElement(notification)
@@ -20,14 +29,47 @@ worker.onmessage = function (event) {
 function run () {
   const barcodeLength = Number.parseInt(inputLength.value, 10)
   const barcodeAmount = Number.parseInt(inputAmount.value, 10)
-  
+  const candidates = getCandidates()
+
+  resultLink.click()
+
+  if (candidates.length > 0) {
+    inputLength.value = candidates[0].length
+    if (! _.every(candidates, candidate => isDna(candidate))) {
+      showError('candidate sequences can only contain characters A, C, G, T')
+      return
+    }
+    if ((new Set(candidates.map(candidate => candidate.length))).size !== 1) {
+      showError('candidate sequences must have the same length')
+      return
+    }
+  }
+
+  hideElement(error)
   showElement(notification)
   hideElement(resultsContainer)
 
   worker.postMessage({
     length: barcodeLength,
-    amount: barcodeAmount
+    amount: barcodeAmount,
+    candidates
   })
+}
+
+function getCandidates () {
+  const candidates = inputCandidates
+    .value
+    .split('\n')
+    .filter(line => line !== '')
+    .map(line => line.toUpperCase())
+
+  return candidates
+}
+
+function showError (message) {
+  hideElement(resultsContainer)
+  showElement(error)
+  errorMessage.textContent = `Error: ${message}`
 }
 
 function displayResults (result) {
@@ -43,12 +85,32 @@ function displaySequences (sequences) {
 }
 
 function displayStats (result) {
-  let t = '<table class="table table-striped"><tbody>'
-  t += '<tr><td>Length of barcodes</td><td>' + result.barcodeLength + '</td></tr>'
-  t += '<tr><td>Amount of barcodes</td><td>' + result.barcodeCount + '</td></tr>'
-  t += '<tr><td>Min. Hamming distance</td><td>' + result.pairwiseHammingDistance + '</td></tr>'
-  t += '<tr><td>Squared error</td><td>' + result.squaredError.toFixed(4) + '</td></tr>'
-  t += '</tbody></table>'
+  const t = `
+    <table class="table table-striped">
+      <tbody>
+        <tr>
+          <td>Length of barcodes</td>
+          <td>${result.barcodeLength}</td>
+        </tr>
+        <tr>
+          <td>Amount of barcodes</td>
+          <td>${result.barcodeCount}</td>
+        </tr>
+        <tr>
+          <td>Barcode candidates</td>
+          <td>${result.candidates}</td>
+        </tr>
+        <tr>
+          <td>Min. Hamming distance</td>
+          <td>${result.pairwiseHammingDistance}</td>
+        </tr>
+        <tr>
+          <td>Squared error</td>
+          <td>${result.squaredError.toFixed(4)}</td>
+        </tr>
+      </tbody>
+    </table>
+  `
   sequenceStats.innerHTML = t
 }
 
@@ -118,6 +180,11 @@ function hideElement (element) {
   element.classList.add('d-none')
 }
 
+function isDna (seq) {
+  dnaPat = /^[acgt]+$/i
+  return dnaPat.test(seq)
+}
+
 const exampleData = {
   barcodeCount: 8,
   barcodeLength: 10,
@@ -132,11 +199,17 @@ const exampleData = {
     'TACTAGATCG'
   ], 
   pairwiseHammingDistance: 7,
-  squaredError: 0.034375
+  squaredError: 0.034375,
+  candidates: 'random'
 }
 
 function showExample () {
   inputLength.value = exampleData.barcodeLength
   inputAmount.value = exampleData.barcodeCount
-  displayResults(exampleData)
+  setTimeout(() => {
+    hideElement(error)
+    resultLink.click()
+    displayResults(exampleData)
+  }, 400)
+  
 }
