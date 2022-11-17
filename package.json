@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/gear-genomics/bgen#readme",
   "devDependencies": {
-    "parcel": "^1.12.3",
+    "parcel": "^2.8.0",
     "rimraf": "^2.7.1"
   }
 }
