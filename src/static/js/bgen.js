@@ -19,7 +19,9 @@ const resultLink = document.querySelector('#link-results')
 submitButton.addEventListener('click', run)
 exampleButton.addEventListener('click', showExample)
 
-const worker = new Worker('./generateBarcodes.js')
+const worker = navigator.serviceWorker
+worker.register('./generateBarcodes.js')
+
 worker.onmessage = function (event) {
   const result = event.data
   hideElement(notification)
