@@ -1,4 +1,5 @@
-importScripts('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js')
+//importScripts('https://www.gear-genomics.com/libs/js/lodash-4.17.15/lodash.min.js');
+import _ from './lodash.min.js';
 
 onmessage = function (event) {
   const result = generate(

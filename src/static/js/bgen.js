@@ -19,8 +19,7 @@ const resultLink = document.querySelector('#link-results')
 submitButton.addEventListener('click', run)
 exampleButton.addEventListener('click', showExample)
 
-const worker = navigator.serviceWorker
-worker.register('./generateBarcodes.js')
+const worker = new Worker(new URL('./generateBarcodes.js', import.meta.url), {type: 'module'});
 
 worker.onmessage = function (event) {
   const result = event.data
