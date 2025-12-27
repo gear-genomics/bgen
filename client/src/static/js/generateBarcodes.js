@@ -94,7 +94,7 @@ function generate (length, amount, candidatesProvided) {
 function isBalanced (seq) {
   const countThreshold = seq.length / 2
   const counts = { A: 0, C: 0, G: 0, T: 0 }
-  for (i = 0; i < seq.length; i += 1) {
+  for (let i = 0; i < seq.length; i += 1) {
     counts[seq[i]] += 1
     if (counts[seq[i]] >= countThreshold) {
       return false
