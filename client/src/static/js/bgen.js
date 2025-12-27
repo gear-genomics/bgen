@@ -15,11 +15,11 @@ const notification = document.querySelector('#bgen-notification')
 const error = document.querySelector('#bgen-error')
 const errorMessage = document.querySelector('#error-message')
 const resultLink = document.querySelector('#link-results')
- 
+
 submitButton.addEventListener('click', run)
 exampleButton.addEventListener('click', showExample)
 
-const worker = new Worker(new URL('./generateBarcodes.js', import.meta.url), {type: 'module'});
+const worker = new Worker(new URL('./generateBarcodes.js', import.meta.url), { type: 'module' })
 
 worker.onmessage = function (event) {
   const result = event.data
@@ -36,7 +36,7 @@ function run () {
 
   if (candidates.length > 0) {
     inputLength.value = candidates[0].length
-    if (! _.every(candidates, candidate => isDna(candidate))) {
+    if (!_.every(candidates, candidate => isDna(candidate))) {
       showError('candidate sequences can only contain characters A, C, G, T')
       return
     }
@@ -75,7 +75,7 @@ function showError (message) {
 
 function displayResults (result) {
   showElement(resultsContainer)
-  baseFrequencies = computeBaseFrequencies(result.barcodes)
+  const baseFrequencies = computeBaseFrequencies(result.barcodes)
   displaySequences(result.barcodes)
   displayStats(result)
   plotFrequencies(baseFrequencies)
@@ -182,7 +182,7 @@ function hideElement (element) {
 }
 
 function isDna (seq) {
-  dnaPat = /^[acgt]+$/i
+  const dnaPat = /^[acgt]+$/i
   return dnaPat.test(seq)
 }
 
@@ -198,7 +198,7 @@ const exampleData = {
     'AAGGCTTCCA',
     'AGCCTCTAGT',
     'TACTAGATCG'
-  ], 
+  ],
   pairwiseHammingDistance: 7,
   squaredError: 0.034375,
   candidates: 'random'
@@ -212,5 +212,4 @@ function showExample () {
     resultLink.click()
     displayResults(exampleData)
   }, 400)
-  
 }
